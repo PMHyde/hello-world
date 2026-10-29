@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Habla Cubano</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display&display=swap">
+<style>
+/* Layout: one calm reading column, a slim status bar on top, one task card at a time. */
+:root {
+  --bg: #f3f6f5;
+  --surface: #ffffff;
+  --ink: #15302e;
+  --muted: #4c6461;
+  --line: #d3dedb;
+  --accent: #0d6a6e;
+  --accent-ink: #ffffff;
+  --accent-soft: #e1efee;
+  --warm: #a95c0c;
+  --warm-soft: #fbf0e2;
+  --ok: #2b7546;
+  --ok-soft: #e4f2e8;
+  --close: #8a5a00;
+  --close-soft: #fbf3dc;
+  --miss: #9b3a3a;
+  --miss-soft: #f8e7e6;
+  --focus: #e09a2c;
+  --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", Verdana, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1817; --surface: #162322; --ink: #e5eeec; --muted: #9db3af; --line: #2a3c3a;
+    --accent: #56b8ba; --accent-ink: #04201f; --accent-soft: #19393a;
+    --warm: #e9a75a; --warm-soft: #2e2416;
+    --ok: #74c792; --ok-soft: #163024; --close: #e6bb62; --close-soft: #302815;
+    --miss: #eb9393; --miss-soft: #351d1d; --focus: #f0b453;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1817; --surface: #162322; --ink: #e5eeec; --muted: #9db3af; --line: #2a3c3a;
+  --accent: #56b8ba; --accent-ink: #04201f; --accent-soft: #19393a;
+  --warm: #e9a75a; --warm-soft: #2e2416;
+  --ok: #74c792; --ok-soft: #163024; --close: #e6bb62; --close-soft: #302815;
+  --miss: #eb9393; --miss-soft: #351d1d; --focus: #f0b453;
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+html { font-size: 19px; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 1rem; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+/* Status bar */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); padding-block: 14px 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.brand { font-family: var(--font-display); font-size: 1.45rem; line-height: 1; letter-spacing: .01em; }
+.brand small { font-family: var(--font-body); font-size: .72rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-left: 8px; }
+.bar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.pill {
+  font-size: .8rem; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--ink);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.pill.warn { background: var(--close-soft); color: var(--close); font-weight: 700; }
+
+.banner { border-radius: 10px; padding: 12px 16px; background: var(--close-soft); color: var(--ink); border: 1px solid var(--line); }
+
+/* Text */
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: 2.6rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.25rem; }
+p { margin: 0; max-width: 62ch; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.stack-lg { display: flex; flex-direction: column; gap: 24px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* Card */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+@media (max-width: 480px) { .card { padding: 18px; } h1 { font-size: 2.1rem; } }
+
+/* Buttons */
+button, .btn {
+  font: inherit; font-size: 1rem; cursor: pointer; border-radius: 10px; min-height: 52px; padding: 10px 20px;
+  border: 2px solid var(--accent); background: var(--surface); color: var(--accent); font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+button.primary { background: var(--accent); color: var(--accent-ink); }
+button.quiet { border-color: var(--line); color: var(--ink); font-weight: 400; }
+button:hover { filter: brightness(1.05); }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--focus); outline-offset: 2px;
+}
+button svg { width: 22px; height: 22px; flex: none; }
+button.mic { min-height: 64px; font-size: 1.05rem; }
+button.mic.listening { background: var(--miss); border-color: var(--miss); color: var(--surface); }
+
+/* Onboarding choices */
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.choice { justify-content: flex-start; text-align: left; border-color: var(--line); color: var(--ink); font-weight: 400; min-height: 60px; }
+.choice[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+.steps { display: flex; gap: 6px; }
+.steps span { height: 6px; flex: 1; border-radius: 3px; background: var(--line); }
+.steps span.on { background: var(--accent); }
+
+/* Phrase */
+.phrase { font-family: var(--font-display); font-size: 2.5rem; line-height: 1.12; text-wrap: balance; }
+@media (max-width: 480px) { .phrase { font-size: 2rem; } }
+.say { font-size: 1.05rem; color: var(--muted); letter-spacing: .02em; }
+.meaning { font-size: 1.15rem; }
+.tip { background: var(--warm-soft); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+.tip .eyebrow { color: var(--warm); }
+.prompt-en { font-size: 1.5rem; font-family: var(--font-display); }
+
+/* Answer */
+form.answer { display: flex; gap: 10px; flex-wrap: wrap; }
+form.answer input {
+  flex: 1 1 260px; min-width: 0; min-height: 56px; font: inherit; font-size: 1.15rem; padding: 10px 14px;
+  border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.heard { color: var(--muted); font-style: italic; }
+.feedback { border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.feedback.right { background: var(--ok-soft); }
+.feedback.right strong { color: var(--ok); }
+.feedback.close { background: var(--close-soft); }
+.feedback.close strong { color: var(--close); }
+.feedback.wrong { background: var(--miss-soft); }
+.feedback.wrong strong { color: var(--miss); }
+.feedback.info { background: var(--accent-soft); }
+.words { font-family: var(--font-display); font-size: 1.5rem; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.words mark { background: none; color: var(--miss); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+.foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 16px; }
+
+/* Grammar examples */
+.examples { display: flex; flex-direction: column; gap: 8px; }
+.ex { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.ex:last-child { border-bottom: 0; }
+.ex .es { font-family: var(--font-display); font-size: 1.3rem; }
+.ex .en { grid-column: 2; color: var(--muted); }
+.ex button { grid-row: span 2; min-height: 44px; width: 48px; padding: 0; }
+
+/* Lesson path */
+.path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.path li { display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.path li:last-child { border-bottom: 0; }
+.dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: .75rem; }
+.path li.done .dot { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.path li.next .dot { border-color: var(--accent); background: var(--accent-soft); }
+.path .t { font-weight: 700; }
+.path .s { color: var(--muted); font-size: .88rem; }
+
+/* Summary table */
+table.answers { width: 100%; border-collapse: collapse; }
+table.answers td { padding: 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.answers td:first-child { color: var(--muted); padding-right: 16px; width: 42%; }
+
+/* Settings / ask */
+details.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+details.panel > summary { cursor: pointer; padding: 16px 20px; font-weight: 700; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+details.panel > summary::-webkit-details-marker { display: none; }
+details.panel > summary::after { content: "+"; font-size: 1.4rem; color: var(--muted); }
+details.panel[open] > summary::after { content: "–"; }
+details.panel .inner { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 16px; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
+label.field span.help { font-weight: 400; color: var(--muted); font-size: .88rem; }
+select, textarea, input[type="range"] { font: inherit; }
+select, textarea { padding: 10px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); min-height: 48px; max-width: 100%; }
+textarea { min-height: 90px; resize: vertical; }
+input[type="range"] { accent-color: var(--accent); width: 100%; max-width: 360px; }
+.answer-out { white-space: pre-wrap; background: var(--accent-soft); border-radius: 10px; padding: 14px 16px; }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: no-preference) {
+  .card { animation: rise .25s ease-out both; }
+  @keyframes rise { from { transform: translateY(6px); } to { transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="bar">
+    <div class="brand">Habla Cubano<small>Spanish tutor</small></div>
+    <div class="bar-right">
+      <span class="pill" id="where" hidden></span>
+      <span class="pill" id="clock" hidden></span>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" role="status" hidden></div>
+
+  <main id="stage" aria-live="polite"></main>
+
+  <details class="panel" id="askPanel" hidden>
+    <summary>Ask your tutor a question</summary>
+    <div class="inner">
+      <p class="muted">Ask anything in English. For example: “Why is it buenas tardes and not buenos tardes?”</p>
+      <label class="field" for="askBox">Your question
+        <textarea id="askBox"></textarea>
+      </label>
+      <div class="row">
+        <button class="primary" id="askBtn" type="button">Ask</button>
+        <button class="quiet" id="askStop" type="button" hidden>Stop</button>
+      </div>
+      <div class="answer-out" id="askOut" hidden></div>
+    </div>
+  </details>
+
+  <details class="panel" id="settingsPanel" hidden>
+    <summary>Settings and lessons</summary>
+    <div class="inner">
+      <label class="field" for="rate">Speaking speed
+        <span class="help">Slower is fine. You can speed up later.</span>
+        <input type="range" id="rate" min="0.5" max="1" step="0.05">
+      </label>
+      <label class="field" for="voiceSel">Spanish voice
+        <span class="help">Voices come from your device. Latin American voices are closest to Cuban.</span>
+        <select id="voiceSel"></select>
+      </label>
+      <label class="field" for="modeSel">Practice style
+        <select id="modeSel">
+          <option value="text">Text: read and type</option>
+          <option value="voice">Voice: listen and speak</option>
+          <option value="both">Both</option>
+        </select>
+      </label>
+      <div class="stack">
+        <div class="eyebrow">Go to a lesson</div>
+        <div class="row" id="jump"></div>
+      </div>
+      <div class="row">
+        <button class="quiet" id="redoAnswers" type="button">Change my answers</button>
+        <button class="quiet" id="endNow" type="button">End today’s session</button>
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/* ---------- Lessons ---------- */
+const LESSONS = [
+  {
+    id: "sounds", title: "Los sonidos", en: "Sounds and first words",
+    intro: [
+      "Spanish has five vowel sounds. They never change: a = “ah”, e = “eh”, i = “ee”, o = “oh”, u = “oo”.",
+      "Almost every letter is spoken. The h is always silent.",
+      "Cuban tip: Cubans often soften or drop the s at the end of a syllable. “Gracias” can sound like “gracia”. Learn the full word. Then you will understand the Cuban sound too."
+    ],
+    items: [
+      { es: "Hola", en: "Hello", say: "OH-lah", note: "The h is silent. Never say “hoh-la”." },
+      { es: "Sí", en: "Yes", say: "SEE", note: "Short and clean." },
+      { es: "No", en: "No", say: "NOH", note: "Keep the o pure. No “oh-oo” glide like in English." },
+      { es: "Gracias", en: "Thank you", say: "GRAH-see-ahs", note: "In Cuba you will often hear “GRAH-see-ah”, with the last s dropped.", cuban: true },
+      { es: "Por favor", en: "Please", say: "por fah-VOR", note: "The single r is a quick tap of the tongue, like the tt in “butter”." },
+      { es: "De nada", en: "You’re welcome", say: "deh NAH-dah", note: "A d between vowels is soft, close to the th in “this”." },
+      { es: "Perdón", en: "Excuse me / Sorry", say: "pehr-DOHN", note: "The accent mark tells you to stress that part: per-DÓN." },
+      { es: "Mucho gusto", en: "Nice to meet you", say: "MOO-choh GOO-stoh", note: "Cubans often say “MOO-cho GOO-to”, softening the s.", cuban: true },
+      { es: "Señor", en: "Sir / Mr.", say: "seh-NYOR", note: "The ñ sounds like “ny” in “canyon”." },
+      { es: "Carro", en: "Car", say: "KAH-rroh", note: "The double rr is rolled. Cubans say “carro”. In Spain it is “coche”.", cuban: true }
+    ],
+    grammar: {
+      title: "Stress and spelling",
+      body: [
+        "Spanish tells you where to put the stress.",
+        "Words ending in a vowel, n, or s: stress the second-to-last part. GRA-cias. NA-da.",
+        "Words ending in other letters: stress the last part. se-ÑOR. fa-VOR.",
+        "An accent mark breaks the rule and shows the stress. per-DÓN.",
+        "Questions and exclamations open with an upside-down mark: ¿Cómo está? ¡Hola!"
+      ],
+      examples: [ { es: "Gracias", en: "GRA-cias" }, { es: "Señor", en: "se-ÑOR" }, { es: "Perdón", en: "per-DÓN" } ]
+    },
+    quiz: [3, 4, 5, 7]
+  },
+  {
+    id: "greetings", title: "Los saludos", en: "Greetings",
+    intro: [
+      "In business, greet everyone in the room. A handshake is normal in Cuba.",
+      "People who know each other often kiss once on the right cheek. Men usually shake hands with men.",
+      "Start with the formal “usted” (you). Let the Cuban side switch to the friendly “tú” first."
+    ],
+    items: [
+      { es: "Buenos días", en: "Good morning", say: "BWEH-nohs DEE-ahs", note: "Use it until noon." },
+      { es: "Buenas tardes", en: "Good afternoon", say: "BWEH-nahs TAR-dehs", note: "Use it from noon until dark." },
+      { es: "Buenas noches", en: "Good evening / Good night", say: "BWEH-nahs NOH-chehs", note: "Both hello and goodbye after dark." },
+      { es: "¿Cómo está usted?", en: "How are you? (formal)", say: "KOH-moh eh-STAH oo-STEHD", note: "In Cuba it often sounds like “¿Cómo etá?”.", cuban: true },
+      { es: "Muy bien, gracias", en: "Very well, thank you", say: "mwee bee-EHN, GRAH-see-ahs", note: "“Muy” sounds like the English “mwee”." },
+      { es: "¿Y usted?", en: "And you? (formal)", say: "ee oo-STEHD", note: "Always return the question. It is polite." },
+      { es: "Encantado", en: "Delighted to meet you", say: "ehn-kahn-TAH-doh", note: "A man says “encantado”. A woman says “encantada”. Cubans often say “encantao”.", alt: ["Encantada"], cuban: true },
+      { es: "¿Qué tal?", en: "How’s it going?", say: "keh TAHL", note: "Friendly. Fine with colleagues." },
+      { es: "Hasta luego", en: "See you later", say: "AH-stah LWEH-goh", note: "In Cuba it can sound like “AH-ta LWEH-go”.", cuban: true },
+      { es: "Nos vemos", en: "See you", say: "nohs VEH-mohs", note: "Very common in Cuba. The b and v sound the same.", cuban: true }
+    ],
+    grammar: {
+      title: "Tú and usted",
+      body: [
+        "Both words mean “you”.",
+        "Usted is formal. Use it with clients, officials, and older people.",
+        "Tú is friendly. Cubans move to tú quickly. Wait for them to do it.",
+        "The verb changes with each one: ¿Cómo está usted? (formal) and ¿Cómo estás? (friendly).",
+        "For “you all”, Cubans always say “ustedes”.",
+        "Why buenos días but buenas tardes? Día is a masculine word. Tarde and noche are feminine. The ending matches.",
+        "Cuban street greeting: “¿Qué bolá?” means “What’s up?”. Good to recognize. Do not use it in a meeting."
+      ],
+      examples: [ { es: "¿Cómo está usted?", en: "How are you? (formal)" }, { es: "¿Cómo estás?", en: "How are you? (friendly)" }, { es: "¿Qué bolá?", en: "What’s up? (Cuban slang)" } ]
+    },
+    quiz: [0, 3, 8, 6]
+  },
+  {
+    id: "intros", title: "Las presentaciones", en: "Introductions",
+    intro: [
+      "Cubans value warmth before business.",
+      "Expect a few minutes of talk about family, your trip, or the weather before the main topic.",
+      "These phrases let you say who you are and what you do."
+    ],
+    items: [
+      { es: "Me llamo Paul", en: "My name is Paul", say: "meh YAH-moh Paul", note: "The ll sounds like the English y." },
+      { es: "Soy de Estados Unidos", en: "I’m from the United States", say: "soy deh eh-STAH-dohs oo-NEE-dohs", note: "Cubans may say “Etado Unido”.", cuban: true },
+      { es: "Vivo en Luisiana", en: "I live in Louisiana", say: "VEE-voh ehn loo-ee-see-AH-nah", note: "Louisiana is spelled “Luisiana” in Spanish." },
+      { es: "Trabajo en bienes raíces", en: "I work in real estate", say: "trah-BAH-hoh ehn bee-EH-nehs rah-EE-sehs", note: "The j is a strong h, from the throat." },
+      { es: "Soy constructor", en: "I’m a builder", say: "soy kohn-strook-TOR", note: "Useful for your background in construction." },
+      { es: "¿Cómo se llama usted?", en: "What is your name? (formal)", say: "KOH-moh seh YAH-mah oo-STEHD", note: "Literally: How do you call yourself?" },
+      { es: "Le presento a mi socio", en: "Let me introduce my partner", say: "leh preh-SEHN-toh ah mee SOH-see-oh", note: "In Cuba “socio” also means “buddy”. In a meeting, it means business partner.", cuban: true },
+      { es: "Aquí tiene mi tarjeta", en: "Here is my card", say: "ah-KEE tee-EH-neh mee tar-HEH-tah", note: "Offer it with a smile. Cards are welcome." },
+      { es: "¿A qué se dedica?", en: "What do you do for work?", say: "ah KEH seh deh-DEE-kah", note: "A polite, formal question." },
+      { es: "Mucho gusto en conocerle", en: "A pleasure to meet you", say: "MOO-choh GOO-stoh ehn koh-noh-SEHR-leh", note: "Cubans say the c in “conocer” like an s.", cuban: true }
+    ],
+    grammar: {
+      title: "Soy: I am",
+      body: [
+        "“Soy” comes from the verb ser, to be.",
+        "Use it for who you are, where you are from, and your job.",
+        "You do not need “yo” (I). “Soy” already means “I am”.",
+        "No “a” or “an” before a job: “Soy constructor”, not “Soy un constructor”."
+      ],
+      examples: [ { es: "Soy Paul", en: "I am Paul" }, { es: "Soy de Luisiana", en: "I am from Louisiana" }, { es: "Soy constructor", en: "I am a builder" } ]
+    },
+    quiz: [0, 3, 7, 6]
+  },
+  {
+    id: "meetings", title: "Las reuniones", en: "Meetings",
+    intro: [
+      "Meetings in Cuba can start late and run long. Patience is respected.",
+      "These phrases help you manage time and the conversation.",
+      "They also let you ask people to slow down. That is always acceptable."
+    ],
+    items: [
+      { es: "Tengo una reunión a las diez", en: "I have a meeting at ten", say: "TEHN-goh OO-nah rreh-oo-nee-OHN ah lahs dee-EHS", note: "Cubans say z like s: “dies”.", cuban: true },
+      { es: "¿A qué hora nos vemos?", en: "What time shall we meet?", say: "ah keh OH-rah nohs VEH-mohs", note: "The h in hora is silent." },
+      { es: "Gracias por su tiempo", en: "Thank you for your time", say: "GRAH-see-ahs por soo tee-EHM-poh", note: "“Su” is the formal “your”." },
+      { es: "¿Podemos empezar?", en: "Can we begin?", say: "poh-DEH-mohs ehm-peh-SAHR", note: "A polite way to start." },
+      { es: "Más despacio, por favor", en: "Slower, please", say: "mahs dehs-PAH-see-oh, por fah-VOR", note: "Use this as often as you need. Cubans speak fast." , cuban: true },
+      { es: "¿Me lo puede repetir?", en: "Could you repeat that?", say: "meh loh PWEH-deh rreh-peh-TEER", note: "A single r at the start of a word is rolled: rrepetir." },
+      { es: "No entiendo", en: "I don’t understand", say: "noh ehn-tee-EHN-doh", note: "Simple and honest. Say it with a smile." },
+      { es: "Un momentico, por favor", en: "One moment, please", say: "oon moh-mehn-TEE-koh", note: "Cubans love the “-ico” ending: momentico, chiquitico.", cuban: true },
+      { es: "Dale", en: "OK / Go ahead", say: "DAH-leh", note: "Very Cuban. It means OK, sure, let’s do it.", cuban: true },
+      { es: "¿Cómo no?", en: "Of course", say: "KOH-moh NOH", note: "It sounds like a question. It means “certainly”." }
+    ],
+    grammar: {
+      title: "Can you…? with poder",
+      body: [
+        "Poder means “can”.",
+        "Only the first verb changes. The second verb stays in its basic form, ending in -ar, -er, or -ir.",
+        "¿Puede repetir? Can you repeat? ¿Podemos empezar? Can we begin?",
+        "Cuban time words: “ahorita” in Cuba means “in a little while”, not “right now”. “Ahora mismo” means right now."
+      ],
+      examples: [ { es: "¿Puede repetir?", en: "Can you repeat?" }, { es: "¿Podemos empezar?", en: "Can we begin?" }, { es: "Ahora mismo", en: "Right now" } ]
+    },
+    quiz: [2, 4, 6, 7]
+  },
+  {
+    id: "negotiation", title: "La negociación", en: "Polite negotiation",
+    intro: [
+      "Cuban negotiation is personal and polite.",
+      "Be firm, but never harsh. Soft phrases keep the door open.",
+      "You know this part of business well. Now you will say it in Spanish."
+    ],
+    items: [
+      { es: "¿Cuánto cuesta?", en: "How much does it cost?", say: "KWAHN-toh KWEH-stah", note: "Cubans may say “KWEH-ta”.", cuban: true },
+      { es: "¿Cuál es su mejor precio?", en: "What is your best price?", say: "kwahl ehs soo meh-HOR PREH-see-oh", note: "The j in mejor is a strong h." },
+      { es: "Es un poco caro", en: "It’s a little expensive", say: "ehs oon POH-koh KAH-roh", note: "One r here, a light tap. “Carro” (car) has a rolled rr." },
+      { es: "Me gustaría pensarlo", en: "I’d like to think about it", say: "meh goo-stah-REE-ah pehn-SAHR-loh", note: "A polite way to pause a deal." },
+      { es: "¿Podría bajar un poco el precio?", en: "Could you lower the price a little?", say: "poh-DREE-ah bah-HAHR oon POH-koh ehl PREH-see-oh", note: "“Podría” is softer than “puede”." },
+      { es: "Le propongo otra cosa", en: "I propose something else", say: "leh proh-POHN-goh OH-trah KOH-sah", note: "Good for a counteroffer." },
+      { es: "Me parece bien", en: "That seems fine to me", say: "meh pah-REH-seh bee-EHN", note: "A warm way to agree." },
+      { es: "Necesito consultarlo con mi socio", en: "I need to check with my partner", say: "neh-seh-SEE-toh kohn-sool-TAR-loh kohn mee SOH-see-oh", note: "Buys time without saying no." },
+      { es: "¿Podemos llegar a un acuerdo?", en: "Can we reach an agreement?", say: "poh-DEH-mohs yeh-GAHR ah oon ah-KWEHR-doh", note: "The ll in llegar sounds like y." },
+      { es: "Trato hecho", en: "It’s a deal", say: "TRAH-toh EH-choh", note: "Say it with a handshake." }
+    ],
+    grammar: {
+      title: "Softer requests: would and could",
+      body: [
+        "Spanish softens requests the same way English does.",
+        "“Me gustaría” means “I would like”. It is gentler than “quiero” (I want).",
+        "“¿Podría…?” means “Could you…?”. It is gentler than “¿Puede…?” (Can you…?).",
+        "“Le” means “to you” in the formal form: Le propongo, I propose to you.",
+        "Cuban money slang: “fula” means US dollars. Good to recognize, not to use."
+      ],
+      examples: [ { es: "Me gustaría pensarlo", en: "I would like to think about it" }, { es: "Quiero pensarlo", en: "I want to think about it (more direct)" }, { es: "¿Podría bajar el precio?", en: "Could you lower the price?" } ]
+    },
+    quiz: [0, 2, 3, 9]
+  }
+];
+
+/* ---------- Onboarding questions ---------- */
+const QUESTIONS = [
+  { key: "language", q: "What language would you like to learn?",
+    opts: [["es-CU", "Spanish, the Cuban way"], ["es", "Spanish, general"], ["other", "Another language"]] },
+  { key: "firstLanguage", q: "What is your first language?",
+    opts: [["en", "English"], ["es", "Spanish"], ["other", "Another language"]] },
+  { key: "level", q: "How much Spanish do you know today?",
+    opts: [["none", "None"], ["little", "A little"], ["some", "Some"]] },
+  { key: "age", q: "Which age group are you in?", why: "This helps me set the pace.",
+    opts: [["u40", "Under 40"], ["40-59", "40 to 59"], ["60-74", "60 to 74"], ["75+", "75 or older"]] },
+  { key: "goal", q: "What is your main goal?",
+    opts: [["pleasure", "Pleasure"], ["business", "Business"], ["relocating", "Relocating"], ["travel", "Travel"], ["other", "Something else"]] },
+  { key: "mode", q: "How would you like to practice?", why: "You can change this any time in Settings.",
+    opts: [["text", "Text: read and type"], ["voice", "Voice: listen and speak"], ["both", "Both"]] }
+];
+const LABEL = Object.fromEntries(QUESTIONS.map(q => [q.key, Object.fromEntries(q.opts)]));
+const LEVEL_START = { none: 0, little: 1, some: 2 };
+const SESSION_MS = 20 * 60 * 1000;
+const WARN_MS = 17 * 60 * 1000;
+
+/* ---------- Storage (best effort) ---------- */
+const store = {
+  get(k, session) { try { const v = (session ? sessionStorage : localStorage).getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } },
+  set(k, v, session) { try { (session ? sessionStorage : localStorage).setItem(k, JSON.stringify(v)); } catch {} },
+  del(k, session) { try { (session ? sessionStorage : localStorage).removeItem(k); } catch {} }
+};
+
+const state = {
+  profile: store.get("hc-profile", true),
+  lastProfile: store.get("hc-profile-last"),
+  progress: store.get("hc-progress") || { done: [], hard: [] },
+  settings: Object.assign({ rate: 0.75, voiceURI: "" }, store.get("hc-settings") || {}),
+  sessionStart: store.get("hc-start", true),
+  draft: {},
+  lesson: 0, queue: [], pos: 0,
+  attempts: 0, answered: false, missedThis: false,
+  sessionHard: new Set(),
+  stats: { practiced: 0, firstTry: 0 },
+  warned: false, timeUp: false, ended: false
+};
+const saveProgress = () => store.set("hc-progress", state.progress);
+const saveSettings = () => store.set("hc-settings", state.settings);
+const itemAt = key => { const [l, i] = key.split("-").map(Number); return LESSONS[l]?.items[i]; };
+
+/* ---------- DOM helpers ---------- */
+const $ = s => document.querySelector(s);
+const stage = $("#stage");
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids.flat()) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return el;
+}
+const ICON = {
+  speaker: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
+  slow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>'
+};
+function iconBtn(icon, label, onclick, cls = "") {
+  const b = h("button", { type: "button", class: cls, onclick });
+  b.innerHTML = ICON[icon];
+  b.append(document.createTextNode(label));
+  return b;
+}
+
+/* ---------- Speech out ---------- */
+const canSpeak = "speechSynthesis" in window;
+let voices = [];
+function loadVoices() {
+  if (!canSpeak) return;
+  voices = speechSynthesis.getVoices();
+  fillVoiceSelect();
+}
+if (canSpeak) { loadVoices(); speechSynthesis.addEventListener?.("voiceschanged", loadVoices); }
+function spanishVoices() {
+  const rank = v => { const l = v.lang.toLowerCase(); return l === "es-us" ? 0 : l === "es-mx" ? 1 : l.startsWith("es-419") ? 2 : l === "es-es" ? 4 : 3; };
+  return voices.filter(v => v.lang.toLowerCase().startsWith("es")).sort((a, b) => rank(a) - rank(b));
+}
+function pickVoice(lang) {
+  if (lang === "es") {
+    const list = spanishVoices();
+    return list.find(v => v.voiceURI === state.settings.voiceURI) || list[0] || null;
+  }
+  return voices.find(v => v.lang.toLowerCase() === "en-us") || voices.find(v => v.lang.toLowerCase().startsWith("en")) || null;
+}
+function speak(text, { slow = false, lang = "es", onend } = {}) {
+  if (!canSpeak || !text) { onend?.(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const v = pickVoice(lang);
+  if (v) u.voice = v;
+  u.lang = v?.lang || (lang === "es" ? "es-US" : "en-US");
+  u.rate = slow ? Math.max(0.45, state.settings.rate - 0.25) : (lang === "es" ? state.settings.rate : 0.95);
+  if (onend) { u.onend = onend; u.onerror = onend; }
+  speechSynthesis.speak(u);
+}
+const usesVoice = () => state.profile && state.profile.mode !== "text";
+
+/* ---------- Speech in ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let micBlocked = false;
+let activeRec = null;
+function listen({ onFinal, onInterim, onFail }) {
+  if (!SR || micBlocked) { onFail(SR ? "blocked" : "unsupported"); return; }
+  if (canSpeak) speechSynthesis.cancel();
+  const r = new SR();
+  r.lang = "es-US"; r.interimResults = true; r.maxAlternatives = 4; r.continuous = false;
+  let settled = false;
+  const settle = fn => { if (settled) return; settled = true; activeRec = null; fn(); };
+  r.onresult = e => {
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const res = e.results[i];
+      if (res.isFinal) { const alts = Array.from(res, a => a.transcript); settle(() => onFinal(alts)); }
+      else interim += res[0].transcript;
+    }
+    if (interim) onInterim(interim);
+  };
+  r.onerror = e => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") micBlocked = true;
+    settle(() => onFail(micBlocked ? "blocked" : e.error));
+  };
+  r.onend = () => settle(() => onFail("no-speech"));
+  try { r.start(); activeRec = r; } catch { settle(() => onFail("blocked")); }
+}
+function stopListening() { try { activeRec?.abort(); } catch {} activeRec = null; }
+
+/* ---------- Answer checking ---------- */
+const NUM = { 1: "uno", 2: "dos", 3: "tres", 4: "cuatro", 5: "cinco", 6: "seis", 7: "siete", 8: "ocho", 9: "nueve", 10: "diez", 11: "once", 12: "doce" };
+const PUNCT = /[¿?¡!.,;:"“”'’()\-–]/g;
+const unaccent = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+const loose = s => unaccent(String(s).toLowerCase()).replace(PUNCT, " ").replace(/\b\d+\b/g, d => NUM[d] || d).replace(/\s+/g, " ").trim();
+const exact = s => String(s).toLowerCase().replace(PUNCT, " ").replace(/\s+/g, " ").trim();
+function lev(a, b) {
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+function grade(input, item) {
+  const targets = [item.es, ...(item.alt || [])];
+  let best = { grade: "wrong", score: 0, target: item.es };
+  for (const t of targets) {
+    const a = loose(input), b = loose(t);
+    if (a === b) {
+      const accentNote = exact(input) !== exact(t);
+      return { grade: "right", score: 1, target: t, accentNote };
+    }
+    const score = 1 - lev(a, b) / Math.max(a.length, b.length, 1);
+    if (score > best.score) best = { grade: score >= 0.75 ? "close" : "wrong", score, target: t };
+  }
+  return best;
+}
+function wordMarks(input, target) {
+  const have = new Set(loose(input).split(" "));
+  return h("div", { class: "words" }, target.split(" ").map(w => {
+    const ok = have.has(loose(w));
+    return ok ? h("span", null, w) : h("mark", null, w);
+  }));
+}
+
+/* ---------- Clock ---------- */
+function remaining() { return state.sessionStart ? SESSION_MS - (Date.now() - state.sessionStart) : SESSION_MS; }
+function tick() {
+  const clock = $("#clock");
+  if (!state.sessionStart || state.ended) { clock.hidden = true; return; }
+  const left = remaining();
+  clock.hidden = false;
+  const mins = Math.max(0, Math.ceil(left / 60000));
+  clock.textContent = left > 0 ? `${mins} min left today` : "Time is up";
+  clock.classList.toggle("warn", left <= SESSION_MS - WARN_MS);
+  if (left <= SESSION_MS - WARN_MS && !state.warned) {
+    state.warned = true;
+    showBanner("About 3 minutes left today. We will finish this part and then stop.");
+  }
+  if (left <= 0 && !state.timeUp) {
+    state.timeUp = true;
+    showBanner("That is 20 minutes. Great work today. Finish this phrase, then we will wrap up.");
+  }
+  if (left <= -60000 && !state.ended) endSession();
+}
+function showBanner(text) { const b = $("#banner"); b.textContent = text; b.hidden = false; }
+function startClock() {
+  if (!state.sessionStart) { state.sessionStart = Date.now(); store.set("hc-start", state.sessionStart, true); }
+  tick();
+}
+setInterval(tick, 5000);
+
+function setWhere(text) { const w = $("#where"); w.hidden = !text; w.textContent = text || ""; }
+function show(...nodes) {
+  stopListening();
+  if (canSpeak) speechSynthesis.cancel();
+  stage.replaceChildren(...nodes);
+  const focusEl = stage.querySelector("[data-autofocus]");
+  if (focusEl) focusEl.focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
+}
+function panels(on) {
+  $("#settingsPanel").hidden = !on;
+  $("#askPanel").hidden = !(on && sampleFn);
+}
+
+/* ---------- Welcome & onboarding ---------- */
+function renderWelcome() {
+  setWhere(""); panels(false);
+  const last = state.lastProfile;
+  const begin = () => { renderQuestion(0); speak("Hola, Paul."); };
+  const card = h("section", { class: "card" },
+    h("div", { class: "eyebrow" }, "Welcome"),
+    h("h1", null, "Hola, Paul."),
+    h("p", null, "Welcome. I am your Spanish tutor. We will go slowly, one phrase at a time."),
+    h("p", null, "Each session takes less than 20 minutes. You can answer by speaking or by typing."),
+    last
+      ? h("div", { class: "stack" },
+          h("p", null, "Welcome back. Last time you told me:"),
+          answersTable(last),
+          h("div", { class: "row" },
+            h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: () => { acceptProfile(last); speak("Hola, Paul."); } }, "Yes, keep these answers"),
+            h("button", { type: "button", onclick: begin }, "Change my answers")))
+      : h("div", { class: "stack" },
+          h("p", null, "First, I have six short questions for you."),
+          h("div", { class: "row" }, h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: begin }, "Begin")))
+  );
+  show(card, pathCard());
+}
+
+function renderQuestion(i) {
+  const q = QUESTIONS[i];
+  if (i === 0 && !Object.keys(state.draft).length && state.profile) state.draft = { ...state.profile };
+  const chosen = state.draft[q.key];
+  const pick = val => {
+    state.draft[q.key] = val;
+    if (i + 1 < QUESTIONS.length) renderQuestion(i + 1);
+    else acceptProfile({ ...state.draft });
+  };
+  const card = h("section", { class: "card" },
+    h("div", { class: "steps", "aria-hidden": "true" }, QUESTIONS.map((_, j) => h("span", { class: j <= i ? "on" : "" }))),
+    h("div", { class: "eyebrow" }, `Question ${i + 1} of ${QUESTIONS.length}`),
+    h("h2", null, q.q),
+    q.why ? h("p", { class: "muted" }, q.why) : null,
+    h("div", { class: "choices", role: "group", "aria-label": q.q },
+      q.opts.map(([val, label], j) => h("button", {
+        type: "button", class: "choice", "aria-pressed": String(chosen === val), "data-autofocus": (chosen ? chosen === val : j === 0) || null,
+        onclick: () => pick(val)
+      }, label))),
+    i > 0 ? h("div", { class: "row" }, h("button", { type: "button", class: "quiet", onclick: () => renderQuestion(i - 1) }, "Back")) : null
+  );
+  show(card);
+}
+
+function answersTable(p) {
+  return h("table", { class: "answers" }, h("tbody", null,
+    QUESTIONS.map(q => h("tr", null, h("td", null, q.q.replace(/\?$/, "")), h("td", null, LABEL[q.key][p[q.key]] || "—")))));
+}
+
+function acceptProfile(p) {
+  state.profile = p;
+  state.draft = {};
+  store.set("hc-profile", p, true);
+  store.set("hc-profile-last", p);
+  state.lastProfile = p;
+  const ageSlow = p.age === "60-74" || p.age === "75+";
+  if (!store.get("hc-settings")) { state.settings.rate = ageSlow ? 0.75 : 0.9; saveSettings(); }
+  syncSettingsUI();
+  renderPlan();
+}
+
+function nextLessonIndex() {
+  const start = LEVEL_START[state.profile?.level] ?? 0;
+  for (let i = start; i < LESSONS.length; i++) if (!state.progress.done.includes(LESSONS[i].id)) return i;
+  for (let i = 0; i < LESSONS.length; i++) if (!state.progress.done.includes(LESSONS[i].id)) return i;
+  return start;
+}
+
+function renderPlan() {
+  setWhere(""); panels(true);
+  const p = state.profile;
+  const notes = [];
+  if (p.language === "other") notes.push("This tutor teaches Spanish. We will continue with Spanish, with Cuban words and sounds.");
+  if (p.language === "es") notes.push("You chose general Spanish. Everything here is standard Spanish. I will also point out the Cuban way of saying things.");
+  if (p.firstLanguage !== "en") notes.push("All explanations are in English.");
+  if (p.goal !== "business") notes.push("The lessons lean toward business, but every phrase is useful in daily life too.");
+  if (p.mode !== "text" && !SR) notes.push("This browser cannot listen to your voice. I will still speak every phrase. Please type your answers.");
+  const next = nextLessonIndex();
+  const card = h("section", { class: "card" },
+    h("div", { class: "eyebrow" }, "Your plan"),
+    h("h2", null, "Thank you, Paul. Here is our plan."),
+    h("p", null, `We start with “${LESSONS[next].en}”. I will say each phrase out loud. You repeat it. I will help with anything that feels hard.`),
+    notes.map(n => h("p", { class: "muted" }, n)),
+    answersTable(p),
+    h("div", { class: "row" },
+      h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: () => startLesson(next, true) }, "Start the lesson"),
+      h("button", { type: "button", class: "quiet", onclick: () => { state.draft = { ...p }; renderQuestion(0); } }, "Change my answers"))
+  );
+  show(card, pathCard(next));
+}
+
+function pathCard(next = state.profile ? nextLessonIndex() : 0) {
+  return h("section", { class: "card" },
+    h("h3", null, "The path"),
+    h("ol", { class: "path" }, LESSONS.map((l, i) => {
+      const done = state.progress.done.includes(l.id);
+      return h("li", { class: done ? "done" : i === next ? "next" : "" },
+        h("span", { class: "dot", "aria-hidden": "true" }, done ? "✓" : String(i + 1)),
+        h("div", null, h("div", { class: "t" }, l.title), h("div", { class: "s" }, l.en)),
+        h("span", { class: "s" }, done ? "Done" : i === next ? "Next" : ""));
+    })));
+}
+
+/* ---------- Lessons ---------- */
+function startLesson(idx, withWarmup = false) {
+  startClock();
+  state.lesson = idx;
+  const L = LESSONS[idx];
+  const q = [];
+  if (withWarmup) {
+    const old = state.progress.hard.filter(k => !k.startsWith(idx + "-")).slice(0, 3);
+    if (old.length) { q.push({ type: "warmup" }); old.forEach(key => q.push({ type: "learn", key, review: true, warm: true })); }
+  }
+  q.push({ type: "intro" });
+  L.items.forEach((_, i) => q.push({ type: "learn", key: `${idx}-${i}` }));
+  q.push({ type: "grammar" }, { type: "review" });
+  L.quiz.forEach(i => q.push({ type: "quiz", key: `${idx}-${i}` }));
+  q.push({ type: "done" });
+  state.queue = q; state.pos = 0;
+  renderStep();
+}
+function advance() {
+  if (state.timeUp && !["done"].includes(state.queue[state.pos]?.type)) { endSession(); return; }
+  state.pos++;
+  renderStep();
+}
+
+function renderStep() {
+  const step = state.queue[state.pos];
+  const L = LESSONS[state.lesson];
+  if (!step) return renderLessonDone();
+  const learnCount = L.items.length;
+  const learnIndex = step.key ? Number(step.key.split("-")[1]) : 0;
+  setWhere(`Lesson ${state.lesson + 1} of ${LESSONS.length}`);
+  panels(true);
+  state.attempts = 0; state.answered = false; state.missedThis = false;
+
+  switch (step.type) {
+    case "warmup":
+      return show(h("section", { class: "card" },
+        h("div", { class: "eyebrow" }, "Warm-up"),
+        h("h2", null, "First, a quick warm-up."),
+        h("p", null, "These phrases felt hard last time. Let’s say them once more. Repetition is how they stick."),
+        h("div", { class: "row" }, h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: advance }, "Start the warm-up"))));
+    case "intro":
+      return show(h("section", { class: "card" },
+        h("div", { class: "eyebrow" }, `Lesson ${state.lesson + 1}`),
+        h("div", { class: "row" }, h("h1", null, L.title), iconBtn("speaker", "Hear it", () => speak(L.title), "quiet")),
+        h("p", { class: "meaning" }, L.en),
+        L.intro.map(t => h("p", null, t)),
+        h("p", { class: "muted" }, `${learnCount} phrases, a short grammar note, then a quick check.`),
+        h("div", { class: "row" }, h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: advance }, "Let’s begin"))));
+    case "grammar":
+      return renderGrammar(L);
+    case "review": {
+      const hardHere = [...state.sessionHard].filter(k => k.startsWith(state.lesson + "-"));
+      if (!hardHere.length) { state.pos++; return renderStep(); }
+      const extra = hardHere.map(key => ({ type: "learn", key, review: true }));
+      state.queue.splice(state.pos + 1, 0, ...extra);
+      return show(h("section", { class: "card" },
+        h("div", { class: "eyebrow" }, "Review"),
+        h("h2", null, "Let’s repeat the hard ones."),
+        h("p", null, `${hardHere.length === 1 ? "One phrase was" : hardHere.length + " phrases were"} tricky. We will go through ${hardHere.length === 1 ? "it" : "them"} again, slowly.`),
+        h("div", { class: "row" }, h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: advance }, "Start the review"))));
+    }
+    case "learn":
+    case "quiz":
+      return renderPractice(step, learnIndex, learnCount);
+    case "done":
+      return renderLessonDone();
+  }
+}
+
+function renderGrammar(L) {
+  const g = L.grammar;
+  show(h("section", { class: "card" },
+    h("div", { class: "eyebrow" }, "Grammar in plain English"),
+    h("h2", null, g.title),
+    g.body.map(t => h("p", null, t)),
+    h("div", { class: "examples" }, g.examples.map(ex => {
+      const b = h("button", { type: "button", class: "quiet", "aria-label": `Hear ${ex.es}`, onclick: () => speak(ex.es) });
+      b.innerHTML = ICON.speaker;
+      return h("div", { class: "ex" }, b, h("span", { class: "es", lang: "es" }, ex.es), h("span", { class: "en" }, ex.en));
+    })),
+    h("div", { class: "row" }, h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: advance }, "Got it. Continue"))));
+}
+
+function renderPractice(step, idx, count) {
+  const item = itemAt(step.key);
+  const isQuiz = step.type === "quiz";
+  const showMic = usesVoice();
+  const label = step.warm ? "Warm-up" : step.review ? "Once more" : isQuiz ? "Quick check" : `Phrase ${idx + 1} of ${count}`;
+
+  const phraseEl = h("div", { class: "phrase", lang: "es", hidden: isQuiz || null }, item.es);
+  const sayEl = h("div", { class: "say", hidden: isQuiz || null }, `Say: ${item.say}`);
+  const tipEl = item.note ? h("div", { class: "tip", hidden: isQuiz || null },
+    h("div", { class: "eyebrow" }, item.cuban ? "Cuban tip" : "Tip"), h("p", null, item.note)) : null;
+  const feedback = h("div", { class: "feedback", hidden: true, role: "status" });
+  const heard = h("p", { class: "heard", hidden: true });
+  const input = h("input", { id: "answerBox", type: "text", lang: "es", autocomplete: "off", autocapitalize: "off", spellcheck: "false",
+    placeholder: showMic ? "Or type it here" : "Type it in Spanish", "aria-label": "Your answer in Spanish" });
+  const checkBtn = h("button", { class: "primary", type: "submit" }, "Check");
+  const nextBtn = h("button", { class: "primary", type: "button", hidden: true, onclick: advance }, "Next");
+  const hardBtn = h("button", { class: "quiet", type: "button", onclick: markHard }, "This one is hard");
+  const skipBtn = h("button", { class: "quiet", type: "button", onclick: () => { addHard(step.key); advance(); } }, isQuiz ? "Show me and move on" : "Skip for now");
+
+  const hearBtn = iconBtn("speaker", "Hear it", () => speak(item.es), "");
+  const slowBtn = iconBtn("slow", "Slower", () => speak(item.es, { slow: true }), "");
+  if (isQuiz) { hearBtn.hidden = true; slowBtn.hidden = true; }
+  const hintBtn = isQuiz ? h("button", { class: "quiet", type: "button", onclick: () => {
+    const first = item.es.split(" ")[0];
+    setFeedback("info", "Hint", `It starts with “${first}”.`);
+    hintBtn.disabled = true;
+  } }, "Give me a hint") : null;
+
+  const micBtn = showMic ? iconBtn("mic", "Tap and speak", onMic, "mic") : null;
+  const micNote = h("p", { class: "muted", hidden: true });
+
+  const form = h("form", { class: "answer", onsubmit: e => {
+    e.preventDefault();
+    if (state.answered) { advance(); return; }
+    const val = input.value.trim();
+    if (!val) { setFeedback("info", "Your turn", showMic ? "Tap the microphone and say it, or type it in the box." : "Type the phrase in the box, then press Check."); return; }
+    check([val], false);
+  } }, input, checkBtn);
+
+  function setFeedback(kind, title, ...body) {
+    feedback.className = "feedback " + kind;
+    feedback.replaceChildren(h("strong", null, title), ...body.map(b => typeof b === "string" ? h("p", null, b) : b));
+    feedback.hidden = false;
+  }
+
+  function addHard(key) {
+    state.sessionHard.add(key);
+    if (!state.progress.hard.includes(key)) { state.progress.hard.push(key); saveProgress(); }
+  }
+
+  function markHard() {
+    addHard(step.key);
+    if (!step.review) {
+      const at = Math.min(state.pos + 3, state.queue.length - 1);
+      state.queue.splice(at, 0, { type: "learn", key: step.key, review: true });
+    }
+    hardBtn.disabled = true;
+    setFeedback("info", "No problem.", "We will come back to this one in a few minutes. Let’s hear it slowly now.");
+    if (isQuiz) reveal();
+    speak(item.es, { slow: true });
+  }
+
+  function reveal() {
+    phraseEl.hidden = false; sayEl.hidden = false; if (tipEl) tipEl.hidden = false;
+    hearBtn.hidden = false; slowBtn.hidden = false;
+  }
+
+  function finish() {
+    state.answered = true;
+    nextBtn.hidden = false; checkBtn.hidden = true; skipBtn.hidden = true;
+    if (micBtn) micBtn.hidden = true;
+    nextBtn.focus();
+  }
+
+  function onMic() {
+    if (micBtn.classList.contains("listening")) { stopListening(); return; }
+    micBtn.classList.add("listening");
+    micBtn.lastChild.textContent = "Listening… tap to stop";
+    heard.hidden = true;
+    listen({
+      onInterim: t => { heard.hidden = false; heard.textContent = `I hear: “${t}”`; },
+      onFinal: alts => { resetMic(); heard.hidden = false; heard.textContent = `I heard: “${alts[0]}”`; check(alts, true); },
+      onFail: why => {
+        resetMic();
+        if (why === "blocked" || why === "unsupported") {
+          micBtn.hidden = true;
+          micNote.hidden = false;
+          micNote.textContent = why === "blocked"
+            ? "Voice answers are not allowed in this window. Please type your answer. Voice answers work when this page is opened directly in Chrome, Edge, or Safari."
+            : "This browser cannot hear speech. Please type your answer. Chrome, Edge, and Safari can listen.";
+          input.focus();
+        } else if (why === "no-speech") {
+          setFeedback("info", "I didn’t catch that.", "Tap the microphone, wait a moment, then speak clearly. Or type it.");
+        } else {
+          setFeedback("info", "The microphone stopped.", "Please try again, or type your answer.");
+        }
+      }
+    });
+  }
+  function resetMic() { micBtn.classList.remove("listening"); micBtn.lastChild.textContent = "Tap and speak"; }
+
+  function check(candidates, viaVoice) {
+    let r = { grade: "wrong", score: -1 };
+    let said = candidates[0];
+    for (const c of candidates) { const g = grade(c, item); if (g.score > r.score) { r = g; said = c; } if (g.grade === "right") break; }
+    state.attempts++;
+    if (r.grade === "right") {
+      const praise = ["Muy bien. That’s right.", "¡Excelente! Well done.", "Perfecto, Paul.", "¡Eso es! That’s it."][Math.floor(Math.random() * 4)];
+      const extra = [];
+      if (state.missedThis) extra.push("You worked through it. That is how learning happens.");
+      if (r.accentNote && !viaVoice) extra.push(`One small thing: it is written “${r.target}”. Accent marks are optional when you type here.`);
+      if (isQuiz) { reveal(); extra.unshift(h("div", { class: "words", lang: "es" }, item.es)); }
+      setFeedback("right", praise, ...extra);
+      if (usesVoice()) speak("¡Muy bien!");
+      if (state.attempts === 1) state.stats.firstTry++;
+      state.stats.practiced++;
+      if (step.review && state.attempts === 1) {
+        state.progress.hard = state.progress.hard.filter(k => k !== step.key); saveProgress();
+      }
+      finish();
+      return;
+    }
+    state.missedThis = true;
+    const heardLine = viaVoice ? `I heard “${said}”.` : null;
+    if (r.grade === "close" && state.attempts >= 3) {
+      addHard(step.key); reveal();
+      setFeedback("close", "Close enough for today.", "You are almost there. We will polish this one in the review.", wordMarks(said, item.es));
+      state.stats.practiced++; finish(); return;
+    } else if (r.grade === "close") {
+      setFeedback("close", "Very close.", ...[heardLine, "Look at the underlined word. Then try once more."].filter(Boolean), wordMarks(said, item.es));
+      if (isQuiz) reveal();
+      if (usesVoice()) speak(item.es, { slow: true });
+    } else if (state.attempts === 1) {
+      setFeedback("wrong", "Not quite yet. That is normal.", ...[heardLine, isQuiz ? "Here is the phrase. Listen, then try again." : "Listen once more, slowly. Then try again."].filter(Boolean));
+      if (isQuiz) reveal();
+      speak(item.es, { slow: true });
+    } else {
+      addHard(step.key);
+      reveal();
+      setFeedback("wrong", "Let’s look at it together.",
+        wordMarks(said, item.es),
+        `Say it in small pieces: ${item.say}.`,
+        "I added this phrase to your review list. We will practice it again soon.");
+      speak(item.es, { slow: true });
+      if (state.attempts >= 3) { state.stats.practiced++; finish(); }
+    }
+    input.select();
+  }
+
+  const card = h("section", { class: "card" },
+    h("div", { class: "eyebrow" }, label),
+    isQuiz ? h("div", { class: "stack" }, h("p", { class: "muted" }, "How do you say this in Spanish?"), h("div", { class: "prompt-en" }, `“${item.en}”`)) : null,
+    phraseEl, sayEl,
+    isQuiz ? null : h("div", { class: "meaning" }, item.en),
+    h("div", { class: "row" }, hearBtn, slowBtn, hintBtn),
+    tipEl,
+    h("div", { class: "stack" },
+      h("p", { class: "muted" }, isQuiz ? (showMic ? "Say it or type it." : "Type it.") : (showMic ? "Now you say it. Speak, or type it." : "Now type it. Accent marks are optional.")),
+      micBtn, micNote, heard, form),
+    feedback,
+    h("div", { class: "foot" }, h("div", { class: "row" }, hardBtn, skipBtn), nextBtn)
+  );
+  show(card);
+  if (!micBtn) input.focus({ preventScroll: true }); else micBtn.focus({ preventScroll: true });
+  if (usesVoice() && !isQuiz) setTimeout(() => speak(item.es), 250);
+  state.current = { item, lesson: LESSONS[state.lesson] };
+}
+
+function renderLessonDone() {
+  const L = LESSONS[state.lesson];
+  if (!state.progress.done.includes(L.id)) { state.progress.done.push(L.id); saveProgress(); }
+  const next = state.lesson + 1 < LESSONS.length ? state.lesson + 1 : null;
+  const left = remaining();
+  const lowTime = left < 5 * 60000;
+  const hardHere = state.progress.hard.filter(k => k.startsWith(state.lesson + "-")).map(itemAt);
+  const actions = [];
+  if (next !== null && !state.timeUp && !lowTime) actions.push(h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: () => startLesson(next) }, `Next: ${LESSONS[next].en}`));
+  actions.push(h("button", { class: actions.length ? "quiet" : "primary", type: "button", "data-autofocus": !actions.length || null, onclick: endSession }, "Finish for today"));
+  show(h("section", { class: "card" },
+    h("div", { class: "eyebrow" }, "Lesson complete"),
+    h("h2", null, `¡Muy bien, Paul! You finished “${L.en}”.`),
+    hardHere.length ? h("p", null, "These are on your review list. I will bring them back next time:") : h("p", null, "Nothing is on your review list from this lesson. Excellent."),
+    hardHere.length ? phraseList(hardHere) : null,
+    lowTime && next !== null && !state.timeUp ? h("p", { class: "muted" }, "There are only a few minutes left today. This is a good place to stop.") : null,
+    next === null ? h("p", null, "You have finished all five lessons. Next time, pick any lesson in Settings to practice again.") : null,
+    h("div", { class: "row" }, actions)));
+  if (usesVoice()) speak("¡Muy bien, Paul!");
+}
+
+function phraseList(items) {
+  return h("div", { class: "examples" }, items.filter(Boolean).map(it => {
+    const b = h("button", { type: "button", class: "quiet", "aria-label": `Hear ${it.es}`, onclick: () => speak(it.es, { slow: true }) });
+    b.innerHTML = ICON.speaker;
+    return h("div", { class: "ex" }, b, h("span", { class: "es", lang: "es" }, it.es), h("span", { class: "en" }, `${it.en} · ${it.say}`));
+  }));
+}
+
+function endSession() {
+  if (state.ended) return;
+  state.ended = true;
+  stopListening();
+  const mins = state.sessionStart ? Math.max(1, Math.round((Date.now() - state.sessionStart) / 60000)) : 0;
+  const hard = [...state.sessionHard].map(itemAt);
+  setWhere(""); panels(false); tick();
+  $("#banner").hidden = true;
+  const next = nextLessonIndex();
+  show(h("section", { class: "card" },
+    h("div", { class: "eyebrow" }, "Session complete"),
+    h("h1", null, "¡Hasta luego, Paul!"),
+    h("p", null, `You practiced for about ${Math.min(mins, 20)} minutes and worked on ${state.stats.practiced} phrases. You got ${state.stats.firstTry} right on the first try.`),
+    hard.length ? h("p", null, "Phrases to listen to before next time:") : null,
+    hard.length ? phraseList(hard) : null,
+    h("p", null, `Next time we start with “${LESSONS[next].en}”.`),
+    h("div", { class: "row" }, h("button", { class: "primary", type: "button", "data-autofocus": true, onclick: newSession }, "Start a new session"))),
+    pathCard(next));
+  speak("¡Hasta luego, Paul!");
+}
+function newSession() {
+  store.del("hc-start", true);
+  Object.assign(state, { sessionStart: null, warned: false, timeUp: false, ended: false, sessionHard: new Set(), stats: { practiced: 0, firstTry: 0 } });
+  $("#banner").hidden = true;
+  renderPlan();
+}
+
+/* ---------- Settings ---------- */
+function fillVoiceSelect() {
+  const sel = $("#voiceSel");
+  const list = spanishVoices();
+  sel.replaceChildren(...(list.length ? list.map(v => h("option", { value: v.voiceURI }, `${v.name} (${v.lang})`)) : [h("option", { value: "" }, "No Spanish voice found on this device")]));
+  sel.value = list.find(v => v.voiceURI === state.settings.voiceURI)?.voiceURI || list[0]?.voiceURI || "";
+}
+function syncSettingsUI() {
+  $("#rate").value = state.settings.rate;
+  if (state.profile) $("#modeSel").value = state.profile.mode;
+  $("#jump").replaceChildren(...LESSONS.map((l, i) => h("button", { type: "button", class: "quiet", onclick: () => { $("#settingsPanel").open = false; if (state.ended) newSession(); startLesson(i); } }, `${i + 1}. ${l.en}`)));
+}
+$("#rate").addEventListener("change", e => { state.settings.rate = Number(e.target.value); saveSettings(); speak("Mucho gusto."); });
+$("#voiceSel").addEventListener("change", e => { state.settings.voiceURI = e.target.value; saveSettings(); speak("Hola, Paul. Mucho gusto."); });
+$("#modeSel").addEventListener("change", e => {
+  state.profile.mode = e.target.value; store.set("hc-profile", state.profile, true); store.set("hc-profile-last", state.profile);
+  const step = state.queue[state.pos];
+  if (step && (step.type === "learn" || step.type === "quiz") && !state.ended) renderStep();
+});
+$("#redoAnswers").addEventListener("click", () => { $("#settingsPanel").open = false; state.draft = { ...state.profile }; renderQuestion(0); });
+$("#endNow").addEventListener("click", () => { $("#settingsPanel").open = false; endSession(); });
+
+/* ---------- Ask the tutor (Claude, when available) ---------- */
+let sampleFn = null;
+let askCtl = null;
+if (window.claude && typeof window.claude.use === "function") {
+  window.claude.use("sample").then(fn => { sampleFn = fn; if (fn && !$("#settingsPanel").hidden) $("#askPanel").hidden = false; }).catch(() => {});
+}
+$("#askBtn").addEventListener("click", async () => {
+  const q = $("#askBox").value.trim();
+  const out = $("#askOut");
+  if (!q || !sampleFn) return;
+  const p = state.profile || {};
+  const cur = state.current;
+  const prompt = [
+    "You are a patient, respectful Spanish tutor. Your learner is Paul, an English speaker in the age group " + (LABEL.age[p.age] || "60 to 74") + ".",
+    "He is learning Cuban Spanish for business. His level: " + (LABEL.level[p.level] || "none") + ".",
+    "Answer in plain English with short sentences. Be warm and encouraging, never condescending.",
+    "Explain grammar simply. When useful, mention how Cubans say it. Put Spanish words in quotes with the English meaning.",
+    "Keep it under 130 words. No headings, no tables, no markdown symbols.",
+    cur ? `Current lesson: ${cur.lesson.en}. Current phrase: "${cur.item.es}" (${cur.item.en}).` : "",
+    "Paul's question: " + q
+  ].join("\n");
+  askCtl = new AbortController();
+  $("#askBtn").disabled = true; $("#askStop").hidden = false;
+  out.hidden = false; out.textContent = "Thinking…";
+  try {
+    await sampleFn(prompt, { signal: askCtl.signal, cache: false, onText: ({ text }) => { out.textContent = text; } });
+  } catch (e) {
+    if (e?.code === "cancelled") out.textContent = e.text || "Stopped.";
+    else if (e?.code === "not_granted" || e?.code === "sampling_disabled" || e?.code === "capability_disabled") { out.textContent = "The tutor can’t answer questions in this view."; }
+    else if (e?.code === "rate_limited") out.textContent = "Too many questions at once. Please wait a minute and ask again.";
+    else out.textContent = (e?.text ? e.text + "\n\n" : "") + "The answer was interrupted. Please press Ask again.";
+  } finally {
+    $("#askBtn").disabled = false; $("#askStop").hidden = true;
+  }
+});
+$("#askStop").addEventListener("click", () => askCtl?.abort());
+
+/* ---------- Start ---------- */
+syncSettingsUI();
+if (state.profile && state.sessionStart) { startLesson(nextLessonIndex()); }
+else if (state.profile) renderPlan();
+else renderWelcome();
+})();
+</script>
+</body>
+</html>
